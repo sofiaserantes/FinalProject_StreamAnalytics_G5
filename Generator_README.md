@@ -60,7 +60,7 @@ All output files will be written to the current working directory. The script pr
 📂 All missing deliverables generated.
 
 ## Configuration
-There are no CLI arguments. All parameters are defined as constants at the top of milestone1_generator.py and can be edited directly before running
+There are no CLI arguments. All parameters are defined as constants at the top of Milestone1.pynb and can be edited directly before running
 
 ### Volume
 ```python
