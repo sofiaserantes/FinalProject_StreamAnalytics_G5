@@ -27,13 +27,17 @@ sample_courier_status_events.json / .avro
 
 ## Requirements
 
-Python 3.10 or higher
+- Python 3.10 or higher
+- `fastavro` for AVRO serialisation
 
-fastavro for AVRO serialisation
-## Install the dependency:
+Install the dependency:
 ```python
 pip install fastavro
 ```
+
+3. The space before `## How to verify the output` and `## Output file reference` will cause them not to render as headings — remove the leading space.
+
+**One thing to add** — a brief note on what edge cases are and why they exist, just before the edge case config block:
 ## How to run it
 
 1. Open `Milestone1.ipynb` 
