@@ -109,7 +109,7 @@ IMPOSSIBLE_DURATION_PROB          = 0.01  # 1%  — negative or extreme duration
 
 COURIER_OFFLINE_MID_DELIVERY_PROB = 0.02  # 2%  — courier goes offline mid-delivery
 
-
+ ## Output file reference
 | File     | Format   | Contents |
 |----------|----------|----------|
 |order_lifecycle_events.json |JSON array |All ~4,000 
