@@ -115,7 +115,13 @@ COURIER_OFFLINE_MID_DELIVERY_PROB = 0.02  # 2%  — courier goes offline mid-del
 |order_lifecycle_events.json |JSON array |All ~4,000 
 |order eventsorder_lifecycle_events.avro|AVRO binary |Same, in binary AVRO format
 |courier_status_events.json |JSON array |All ~4,000 courier events |
-courier_status_events.avroAVRO binarySame, in binary AVRO formatsample_order_lifecycle_events.jsonJSON arrayFirst 10 order eventssample_order_lifecycle_events.avroAVRO binaryFirst 10 order eventssample_courier_status_events.jsonJSON arrayFirst 10 courier eventssample_courier_status_events.avroAVRO binaryFirst 10 courier eventsorder_lifecycle_events.avscJSON (AVRO schema)Standalone schema for Feed Acourier_status_events.avscJSON (AVRO schema)Standalone schema for Feed B
+|courier_status_events.avro |AVRO binary |Same, in binary AVRO format
+|sample_order_lifecycle_events.jsonJ |SON array |First 10 order events
+|sample_order_lifecycle_events.avro |AVRO binary |First 10 order events
+|sample_courier_status_events.json |JSON array |First 10 courier events
+|sample_courier_status_events.avro |AVRO binary |First 10 courier events
+|order_lifecycle_events.avsc |JSON (AVRO schema) |Standalone schema for Feed A
+|courier_status_events.avsc |JSON (AVRO schema) |Standalone schema for Feed B
 
 
 
