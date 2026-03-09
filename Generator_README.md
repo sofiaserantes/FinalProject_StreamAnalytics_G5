@@ -23,6 +23,7 @@ cd generator
 python Milestone1_ipynb
 
 All output files are written to the current working directory. The script prints a confirmation line for each file created:
+
 ✅ order_lifecycle_events.json written
 
 ✅ order_lifecycle_events.avro written
