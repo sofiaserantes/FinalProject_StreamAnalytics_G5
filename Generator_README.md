@@ -35,11 +35,10 @@ fastavro for AVRO serialisation
 pip install fastavro
 ## How to run it
 
-cd generator
+1. Open `Milestone1.ipynb` 
+2. Run all cells: **Kernel → Restart & Run All**
 
-python Milestone1_ipynb
-
-All output files are written to the current working directory. The script prints a confirmation line for each file created:
+All output files will be written to the current working directory. The script prints a confirmation line for each file created:
 
 ✅ order_lifecycle_events.json written
 
@@ -112,9 +111,9 @@ COURIER_OFFLINE_MID_DELIVERY_PROB = 0.02  # 2%  — courier goes offline mid-del
  ## Output file reference
 | File     | Format   | Contents |
 |----------|----------|----------|
-|order_lifecycle_events.json |JSON array |All ~4,000 
+|order_lifecycle_events.json |JSON array |All 4,000 
 |order eventsorder_lifecycle_events.avro|AVRO binary |Same, in binary AVRO format
-|courier_status_events.json |JSON array |All ~4,000 courier events |
+|courier_status_events.json |JSON array |All 4,000 courier events |
 |courier_status_events.avro |AVRO binary |Same, in binary AVRO format
 |sample_order_lifecycle_events.jsonJ |SON array |First 10 order events
 |sample_order_lifecycle_events.avro |AVRO binary |First 10 order events
