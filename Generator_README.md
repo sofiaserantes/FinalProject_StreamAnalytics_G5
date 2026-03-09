@@ -32,7 +32,7 @@ Python 3.10 or higher
 fastavro for AVRO serialisation
 ## Install the dependency:
 
-pip install fastavro
+`pip install fastavro`
 ## How to run it
 
 1. Open `Milestone1.ipynb` 
