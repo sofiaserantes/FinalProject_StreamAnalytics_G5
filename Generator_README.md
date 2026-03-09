@@ -29,7 +29,7 @@ It also writes smaller sample files (first 10 events of each feed) for quick **i
 - Python 3.10 or higher
 - `fastavro` for AVRO serialisation
 
-Install the dependency:
+**Install the dependency:**
 ```python
 pip install fastavro
 ```
