@@ -5,12 +5,16 @@ Milestone1_ipynb produces two synthetic streaming data feeds that simulate the o
 
 ## Feed A
 OrderLifecycle
+
 Output: order_lifecycle_events.json/.avro
+
 Events: 4,000
 
 ## Feed B
 CourierStatus
+
 Output: courier_status_events.json/.avro
+
 Events: 4,000
 
 It also writes smaller sample files (first 10 events of each feed) for quick inspection:
@@ -57,16 +61,25 @@ All output files are written to the current working directory. The script prints
 There are no CLI arguments. All parameters are defined as constants at the top of milestone1_generator.py and can be edited directly before running
 
 ## Volume
+
 NUM_ORDER_EVENTS   = 4000   # total events in the order lifecycle stream
+
 NUM_COURIER_EVENTS = 4000   # total events in the courier status stream
+
 NUM_RESTAURANTS    = 120
+
 NUM_COURIERS       = 300
+
 NUM_CUSTOMERS      = 800
 
 ## Time Window
+
 START_DATE = datetime.datetime(2026, 2, 1, 0, 0, 0)
+
 END_DATE   = datetime.datetime(2026, 3, 1, 0, 0, 0)
 
 ## Geographic zones
+
 ZONES        = ["Z1_Center", "Z2_North", "Z3_South", "Z4_East", "Z5_West"]
+
 ZONE_WEIGHTS = [0.40, 0.18, 0.15, 0.14, 0.13]  # higher = more demand
