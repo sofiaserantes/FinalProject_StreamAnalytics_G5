@@ -141,7 +141,7 @@ with open('sample_order_lifecycle_events.avro', 'rb') as f:
 ```
 
  ## Output file reference
-The following files are generated when the notebook is ran:
+- The following files are generated when the notebook is ran:
 | File     | Format   | Contents |
 |----------|----------|----------|
 |order_lifecycle_events.json |JSON array |All 4,000 order events
