@@ -38,11 +38,12 @@ The goal of M1 is to design and generate two synthetic streaming feeds that toge
 
 | Name | GitHub |
 |---|---|
+
 | Bernarda Andrade | [@22andradeb](https://github.com/22andradeb) |
 | Javier Comin | — |
 | Nour Farhat | [@nour-farhat](https://github.com/nour-farhat) |
 | Sofía Serantes | [@sofiaserantes](https://github.com/sofiaserantes) |
-| Tessa Correig | — |
+| Tessa Correig | [@tessacorreigmartra](https://github.com/tessacorreigmartra) |
 | Rakan Hourani | [@rakanhourani](https://github.com/rakanhourani) |
 
 ---
