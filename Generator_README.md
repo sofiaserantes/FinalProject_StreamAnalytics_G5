@@ -147,7 +147,7 @@ with open('sample_order_lifecycle_events.avro', 'rb') as f:
 |order eventsorder_lifecycle_events.avro|AVRO binary |Same, in binary AVRO format
 |courier_status_events.json |JSON array |All 4,000 courier events |
 |courier_status_events.avro |AVRO binary |Same, in binary AVRO format
-|sample_order_lifecycle_events.jsonJ |SON array |First 10 order events
+|sample_order_lifecycle_events.json |JSON array |First 10 order events
 |sample_order_lifecycle_events.avro |AVRO binary |First 10 order events
 |sample_courier_status_events.json |JSON array |First 10 courier events
 |sample_courier_status_events.avro |AVRO binary |First 10 courier events
