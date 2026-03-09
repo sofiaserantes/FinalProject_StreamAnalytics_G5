@@ -24,13 +24,21 @@ python Milestone1_ipynb
 
 All output files are written to the current working directory. The script prints a confirmation line for each file created:
 ✅ order_lifecycle_events.json written
+
 ✅ order_lifecycle_events.avro written
+
 ✅ courier_status_events.json written
+
 ✅ courier_status_events.avro written
+
 ✅ sample_order_lifecycle_events.json written
+
 ✅ sample_order_lifecycle_events.avro written
+
 ✅ sample_courier_status_events.json written
+
 ✅ sample_courier_status_events.avro written
+
 📂 All missing deliverables generated.
 
 ## Configuration
