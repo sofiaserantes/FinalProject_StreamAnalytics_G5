@@ -85,3 +85,26 @@ END_DATE   = datetime.datetime(2026, 3, 1, 0, 0, 0)
 ZONES        = ["Z1_Center", "Z2_North", "Z3_South", "Z4_East", "Z5_West"]
 
 ZONE_WEIGHTS = [0.40, 0.18, 0.15, 0.14, 0.13]  # higher = more demand
+
+## Business Parameters
+
+BASE_CANCEL_PROB   = 0.06    # baseline cancellation probability
+
+SURGE_PROB         = 0.08    # chance of a demand surge period
+
+PROMO_PROB         = 0.10    # chance of a promotional period
+
+WEEKEND_MULTIPLIER = 1.25    # extra demand on Sat/Sun
+
+## Edge case injection rates
+These control how frequently intentional data quality issues are injected into the stream 
+
+DUPLICATE_EVENT_PROB              = 0.02  # 2%  — exact duplicate events
+
+LATE_EVENT_PROB                   = 0.05  # 5%  — ingestion_time delayed vs event_time
+
+MISSING_STEP_PROB                 = 0.03  # 3%  — orders with a missing lifecycle step
+
+IMPOSSIBLE_DURATION_PROB          = 0.01  # 1%  — negative or extreme durations
+
+COURIER_OFFLINE_MID_DELIVERY_PROB = 0.02  # 2%  — courier goes offline mid-delivery
