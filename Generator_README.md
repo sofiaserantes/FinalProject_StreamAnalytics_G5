@@ -18,7 +18,7 @@ This document explains how to install, configure, and run the synthetic data gen
 
 ## Sample Files
 
-It also writes smaller sample files (first 10 events of each feed) for quick inspection:
+It also writes smaller sample files (first 10 events of each feed) for quick **inspection**:
 
 - sample_order_lifecycle_events.json / .avro
 
