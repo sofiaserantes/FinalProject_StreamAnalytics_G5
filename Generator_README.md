@@ -110,7 +110,7 @@ IMPOSSIBLE_DURATION_PROB          = 0.01  # 1%  — negative or extreme duration
 
 COURIER_OFFLINE_MID_DELIVERY_PROB = 0.02  # 2%  — courier goes offline mid-delivery
 ```
-- We can set any to 0.0 to disable them
+- We can set any to 0.0 to disable them.
  ## How to verify the output
 
  **Inspect a sample event (JSON):**
