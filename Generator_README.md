@@ -17,6 +17,8 @@ Output: courier_status_events.json/.avro
 
 Events: 4,000
 
+## Sample Files
+
 It also writes smaller sample files (first 10 events of each feed) for quick inspection:
 
 sample_order_lifecycle_events.json / .avro
