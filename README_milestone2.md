@@ -7,7 +7,6 @@
 - [Project Overview](#project-overview)
 - [Team Structure](#team-structure)
 - [Architecture](#architecture)
-- [Technology Stack](#technology-stack)
 - [Feed A: Order Lifecycle Events](#feed-a-order-lifecycle-events)
 - [Feed B: Courier Status & Location Events](#feed-b-courier-status--location-events)
 - [Analytics Use Cases](#analytics-use-cases)
@@ -118,24 +117,6 @@ Group 5 — Members:
 
 ---
 
-## Technology Stack
-
-| Component | Technology | Version |
-|---|---|---|
-| Message broker | Azure Event Hubs (Kafka-compatible API) | Standard tier |
-| Stream producer | confluent-kafka + fastavro | Python 3.12 |
-| Serialisation | Apache AVRO (schemaless writer) | fastavro 1.x |
-| Stream processing | Apache Spark Structured Streaming | Spark 4.1.x |
-| Runtime | Google Colab (Java 21, local[*]) | — |
-| Kafka connector | spark-sql-kafka-0-10 | 4.1.1 |
-| AVRO deserialiser | spark-avro | 4.1.1 |
-| Cloud storage | Azure Blob Storage (wasbs://) | — |
-| Blob connector | hadoop-azure + azure-storage | 3.3.1 / 8.6.6 |
-| Data at rest format | Apache Parquet | — |
-| Batch query engine | DuckDB | latest |
-| Dashboard | Streamlit + Plotly | 1.56.0 |
-
----
 
 ## Feed A: Order Lifecycle Events
 
