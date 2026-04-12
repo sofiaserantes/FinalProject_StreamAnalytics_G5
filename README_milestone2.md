@@ -221,23 +221,6 @@ streamlit run dashboard.py
 
 ## Repository Structure
 
-```
-Milestone2_StreamAnalytics_G5/
-│
-├── colab/
-│   └── Milestone2_Group5.ipynb          ← Main Spark notebook (run on Google Colab)
-│
-├── laptop/
-│   ├── dashboard.py                     ← Streamlit dashboard (run locally)
-│   └── requirements.txt                 ← Dashboard dependencies
-│
-├── schemas/
-│   ├── order_lifecycle_events.avsc      ← AVRO schema — Feed A (unchanged from M1)
-│   └── courier_status_events.avsc       ← AVRO schema — Feed B (unchanged from M1)
-│
-└── README.md                            ← This file
-```
-
 ---
 
 ## How to Run
@@ -249,7 +232,7 @@ Milestone2_StreamAnalytics_G5/
 
 ### Step 1 — Run the Spark notebook on Google Colab
 
-1. Open `colab/Milestone2_Group5.ipynb` in Google Colab
+1. Open `Milestone2_Group5.ipynb` in Google Colab
 2. Run all cells **top to bottom** in order:
 
 | Section | What it does | Keep running? |
@@ -265,21 +248,20 @@ Milestone2_StreamAnalytics_G5/
 | Section 9 | DuckDB batch queries on Parquet | Run once |
 | Section 10 | Stop all queries (run only when finished) | — |
 
-> Sections 3 and 7 must remain active throughout the session. These are the producer processes and the Blob writers respectively.
+> Sections 3 and 7 must remain active throughout the session.
 
-### Step 2 — Run the dashboard on your laptop
+### Step 2 — View the live dashboard
+
+Open [https://streamanalyticsgroup5.streamlit.app](https://streamanalyticsgroup5.streamlit.app) in any browser. No setup required.
+
+### Step 3 — Run the dashboard locally (optional)
 
 ```bash
-cd laptop/
 pip install -r requirements.txt
 streamlit run dashboard.py
 ```
 
-Opens at `http://localhost:8501`. The dashboard reads from Azure Blob Storage independently — it does not need to be on the same machine as Colab.
-
-### Step 3 — Verify data is flowing
-
-Check that Parquet files are landing in Blob Storage:
+### Step 4 — Verify data is flowing
 
 ```python
 from azure.storage.blob import BlobServiceClient
@@ -294,3 +276,4 @@ for b in blobs[:10]:
 ```
 
 New Parquet files appear every 20 seconds once Section 7 is running.
+
