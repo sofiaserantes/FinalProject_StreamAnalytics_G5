@@ -4,17 +4,17 @@
 
 ## Table of Contents
 
-[Project Overview](#project-overview)
-[Team Structure](#team-structure)
-[Architecture](#architecture)
-[Technology Stack](#technology-stack)
-[Feed A: Order Lifecycle Events](#feed-a-order-lifecycle-events)
-[Feed B: Courier Status & Location Events](#feed-b-courier-status--location-events)
-[Analytics Use Cases](#analytics-use-cases)
-[Real-Time Dashboard](#real-time-dashboard)
-[Azure Configuration](#azure-configuration)
-[Repository Structure](#repository-structure)
-[How to Run](#how-to-run)
+- [Project Overview](#project-overview)
+- [Team Structure](#team-structure)
+- [Architecture](#architecture)
+- [Technology Stack](#technology-stack)
+- [Feed A: Order Lifecycle Events](#feed-a-order-lifecycle-events)
+- [Feed B: Courier Status & Location Events](#feed-b-courier-status--location-events)
+- [Analytics Use Cases](#analytics-use-cases)
+- [Real-Time Dashboard](#real-time-dashboard)
+- [Azure Configuration](#azure-configuration)
+- [Repository Structure](#repository-structure)
+- [How to Run](#how-to-run)
 
 ---
 
