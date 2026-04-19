@@ -1,5 +1,5 @@
 # Real-Time Food Delivery Analytics Pipeline
-## Stream Analytics — Milestone 2: Real-Time Data Processing & Storage
+## Stream Analytics: Milestone 2: Real-Time Data Processing & Storage
 ---
 
 # Real Time Food Delivery Analytics Pipeline
