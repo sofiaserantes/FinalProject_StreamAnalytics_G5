@@ -10,33 +10,7 @@ This project implements a real time analytics pipeline for a food delivery platf
 
 The goal of Milestone 2 is to show the full pipeline working end to end, from event generation to live analytics and storage.
 
-- [What the project does](#what-the-project-does)
-- [Main tools used](#main-tools-used)
-- [Team](#team)
-- [Pipeline explanation](#pipeline-explanation)
-- [Implemented use cases](#implemented-use-cases)
-  - [1. Raw order event monitor](#1-raw-order-event-monitor)
-  - [2. Cancellation monitor](#2-cancellation-monitor)
-  - [3. Revenue by zone](#3-revenue-by-zone)
-  - [4. Courier availability by zone](#4-courier-availability-by-zone)
-  - [5. Couriers going offline during delivery](#5-couriers-going-offline-during-delivery)
-- [Important note about how to run the project](#important-note-about-how-to-run-the-project)
-- [How to run the notebook](#how-to-run-the-notebook)
-  - [Section 1](#section-1)
-  - [Section 2](#section-2)
-  - [Section 3](#section-3)
-  - [Section 4](#section-4)
-  - [Section 5](#section-5)
-  - [Section 6](#section-6)
-  - [Section 7](#section-7)
-  - [Section 8](#section-8)
-  - [Section 9](#section-9)
-  - [Section 10](#section-10)
-- [Dashboard](#dashboard)
-- [Why Section 3 and Section 7 matter most](#why-section-3-and-section-7-matter-most)
-- [Azure setup used in the project](#azure-setup-used-in-the-project)
-- [Simple repository guide](#simple-repository-guide)
-- [Final practical advice](#final-practical-advice)
+**Live Demo:**https://streamanalyticsmiletone2group5.streamlit.app/
 
 ## What the project does
 
