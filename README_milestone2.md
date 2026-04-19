@@ -2,278 +2,314 @@
 ## Stream Analytics — Milestone 2: Real-Time Data Processing & Storage
 ---
 
-## Table of Contents
+# Real Time Food Delivery Analytics Pipeline
 
-- [Project Overview](#project-overview)
-- [Team Structure](#team-structure)
-- [Architecture](#architecture)
-- [Feed A: Order Lifecycle Events](#feed-a-order-lifecycle-events)
-- [Feed B: Courier Status & Location Events](#feed-b-courier-status--location-events)
-- [Analytics Use Cases](#analytics-use-cases)
-- [Real-Time Dashboard](#real-time-dashboard)
-- [Azure Configuration](#azure-configuration)
-- [Repository Structure](#repository-structure)
-- [How to Run](#how-to-run)
+## Stream Analytics Milestone 2
 
----
+This project implements a real time analytics pipeline for a food delivery platform. It takes two live event streams, processes them with Spark Structured Streaming, stores the results in Azure Blob Storage as Parquet files, and shows the output in a Streamlit dashboard.
 
-## Project Overview
+The goal of Milestone 2 is to show the full pipeline working end to end, from event generation to live analytics and storage.
 
-Building on the data feed design from Milestone 1, this milestone implements the full end-to-end real-time streaming analytics pipeline for a food delivery platform. The pipeline ingests AVRO-encoded events from two streaming feeds, processes them with Apache Spark Structured Streaming, persists the results to Azure Blob Storage in Parquet format, and visualises live insights in a Streamlit dashboard.
+- [What the project does](#what-the-project-does)
+- [Main tools used](#main-tools-used)
+- [Team](#team)
+- [Pipeline explanation](#pipeline-explanation)
+- [Implemented use cases](#implemented-use-cases)
+  - [1. Raw order event monitor](#1-raw-order-event-monitor)
+  - [2. Cancellation monitor](#2-cancellation-monitor)
+  - [3. Revenue by zone](#3-revenue-by-zone)
+  - [4. Courier availability by zone](#4-courier-availability-by-zone)
+  - [5. Couriers going offline during delivery](#5-couriers-going-offline-during-delivery)
+- [Important note about how to run the project](#important-note-about-how-to-run-the-project)
+- [How to run the notebook](#how-to-run-the-notebook)
+  - [Section 1](#section-1)
+  - [Section 2](#section-2)
+  - [Section 3](#section-3)
+  - [Section 4](#section-4)
+  - [Section 5](#section-5)
+  - [Section 6](#section-6)
+  - [Section 7](#section-7)
+  - [Section 8](#section-8)
+  - [Section 9](#section-9)
+  - [Section 10](#section-10)
+- [Dashboard](#dashboard)
+- [Why Section 3 and Section 7 matter most](#why-section-3-and-section-7-matter-most)
+- [Azure setup used in the project](#azure-setup-used-in-the-project)
+- [Simple repository guide](#simple-repository-guide)
+- [Final practical advice](#final-practical-advice)
 
-| Milestone | Scope | Technology |
-|---|---|---|
-| M1 | Data feed design & generation | Python, AVRO, JSON |
-| **M2 (this repo)** | **Stream analytics implementation** | **Azure Event Hubs, Spark Structured Streaming, Azure Blob Storage, Streamlit** |
+## What the project does
 
-The pipeline processes two feeds simultaneously:
+The project works with two event feeds.
 
-| Topic | Schema | Event Hub |
-|---|---|---|
-| `group_5_orders` | `OrderLifecycleEvent` | iesstsabbadbaa-grp-01-05 |
-| `group_5_couriers` | `CourierStatusEvent` | iesstsabbadbaa-grp-01-05 |
+1. `group_5_orders`
 
----
+This feed contains order lifecycle events such as `CREATED`, `ASSIGNED`, `PICKED_UP`, `DELIVERED`, and `CANCELLED`.
 
-## Team Structure
+2. `group_5_couriers`
 
-Group 5 — Members:
+This feed contains courier status and location events such as `IDLE`, `BUSY`, and `OFFLINE`.
 
-| Name | GitHub |
-|---|---|
-| Bernarda Andrade | @22andradeb |
-| Javier Comin | — |
-| Nour Farhat | @nour-farhat |
-| Sofía Serantes | @sofiaserantes |
-| Tessa Correig | @tessacorreigmartra |
-| Rakan Hourani | @rakanhourani |
+Both feeds are sent to Azure Event Hubs in AVRO format. Spark reads them as streaming data, transforms them into structured DataFrames, applies the use cases, and writes the results to Azure Blob Storage. The dashboard then reads the stored Parquet files and displays the most important metrics in a simple visual way.
 
----
+## Main tools used
 
-## Architecture
+1. Python
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     Google Colab                            │
-│                                                             │
-│  ┌─────────────────┐      ┌─────────────────┐              │
-│  │ AVRO Producer   │      │ AVRO Producer   │              │
-│  │ (Orders)        │      │ (Couriers)      │              │
-│  │ confluent-kafka │      │ confluent-kafka  │              │
-│  └────────┬────────┘      └────────┬────────┘              │
-│           │ AVRO / SASL_SSL        │ AVRO / SASL_SSL       │
-└───────────┼────────────────────────┼───────────────────────┘
-            │                        │
-            ▼                        ▼
-┌─────────────────────────────────────────────────────────────┐
-│              Azure Event Hubs                               │
-│         iesstsabbadbaa-grp-01-05                            │
-│                                                             │
-│   ┌──────────────────┐    ┌──────────────────┐             │
-│   │  group_5_orders  │    │ group_5_couriers  │             │
-│   │  4 partitions    │    │  4 partitions     │             │
-│   └────────┬─────────┘    └────────┬──────────┘            │
-└────────────┼──────────────────────┼─────────────────────────┘
-             │                      │
-             ▼                      ▼
-┌─────────────────────────────────────────────────────────────┐
-│         Spark Structured Streaming (Google Colab)           │
-│                    Spark 4.1.x / Java 21                    │
-│                                                             │
-│  readStream (Kafka) → from_avro() → flatten DataFrame       │
-│                                                             │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │              Analytical Queries                      │   │
-│  │  UC1 — All orders monitor      (outputMode: update)  │   │
-│  │  UC2 — Cancellation monitor    (outputMode: update)  │   │
-│  │  UC3 — Revenue by zone         (outputMode: complete)│   │
-│  │  UC4 — Courier availability    (outputMode: complete)│   │
-│  │  UC5 — Offline mid-delivery    (outputMode: update)  │   │
-│  └──────────────────────────────────────────────────────┘   │
-│                                                             │
-│  writeStream → Parquet (trigger: 20 seconds)                │
-└───────────────────────┬─────────────────────────────────────┘
-                        │
-                        ▼
-┌─────────────────────────────────────────────────────────────┐
-│              Azure Blob Storage                             │
-│                  iesstsabbadbaa                             │
-│                  container: group5                          │
-│                                                             │
-│   group5/orders/output/      ← Parquet files (orders)      │
-│   group5/orders/checkpoint/  ← Spark offsets               │
-│   group5/couriers/output/    ← Parquet files (couriers)    │
-│   group5/couriers/checkpoint/← Spark offsets               │
-└───────────────────────┬─────────────────────────────────────┘
-                        │
-                        ▼
-┌─────────────────────────────────────────────────────────────┐
-│         Streamlit Dashboard (localhost / Streamlit Cloud)   │
-│                                                             │
-│  streamanalyticsgroup5.streamlit.app                        │
-│  Reads Parquet directly from Blob · refreshes every 15s    │
-└─────────────────────────────────────────────────────────────┘
-```
+2. Apache Spark Structured Streaming
 
----
+3. Azure Event Hubs
 
+4. Azure Blob Storage
 
-## Feed A: Order Lifecycle Events
+5. AVRO
 
-Identical schema to Milestone 1. In Milestone 2 events are generated continuously by a live AVRO producer and streamed to `group_5_orders` on Azure Event Hubs.
+6. Streamlit
 
-**Producer:** `avro_producer_orders.py` — runs continuously via `nohup`, generating one full order lifecycle per iteration (CREATED → … → DELIVERED or CANCELLED), serialising each event with `fastavro.schemaless_writer`, and producing to Event Hub over SASL_SSL.
+7. DuckDB for small batch style checks on the stored Parquet files
 
-**Spark consumer:** reads via `readStream` with `startingOffsets: earliest`, deserialises with `from_avro()`, flattens to a DataFrame with `event_time` and `ingestion_time` cast to `TimestampType`.
+## Team
 
----
+Group 5
 
-## Feed B: Courier Status & Location Events
+1. Bernarda Andrade  
+2. Javier Comin  
+3. Nour Farhat  
+4. Sofía Serantes  
+5. Tessa Correig  
+6. Rakan Hourani  
 
-Identical schema to Milestone 1. Streamed continuously to `group_5_couriers`.
+## Pipeline explanation
 
-**Producer:** `avro_producer_couriers.py` — maintains per-courier state (online/offline, current zone, current order) and emits realistic state transitions including the edge case of going OFFLINE mid-delivery (`COURIER_OFFLINE_MID_DELIVERY_PROB = 0.02`).
+The pipeline follows this order.
 
----
+1. Producer scripts generate live order and courier events.
 
-## Analytics Use Cases
+2. The events are sent to Azure Event Hubs.
 
-All five use cases are implemented as Spark Structured Streaming queries. Each writes first to an in-memory table (for live inspection) and then to Parquet files in Azure Blob Storage.
+3. Spark Structured Streaming reads both streams from Event Hubs.
 
-### Use Case 1 — Raw order event monitor
-- **Feed:** Orders
-- **Operation:** Passthrough — all event types streamed to memory
-- **Output mode:** `update`
-- **Purpose:** Live visibility into every event arriving from Event Hub; used to verify producer health and schema correctness
+4. Spark deserializes the AVRO messages and flattens them into usable columns.
 
-### Use Case 2 — Cancellation monitor
-- **Feed:** Orders
-- **Operation:** `filter(event_type == "CANCELLED")`
-- **Output mode:** `update`
-- **Business value:** Real-time detection of cancellation spikes during surge periods; grouped by `zone_id` and `cancel_reason` to identify whether cancellations are driven by restaurant capacity, courier unavailability, or customer behaviour
-- **Edge cases handled:** Surge periods add +5% cancellation probability; promo periods subtract −2%
+5. Spark runs five analytics use cases in real time.
 
-### Use Case 3 — Revenue by zone
-- **Feed:** Orders (DELIVERED events only)
-- **Operation:** `groupBy("zone_id").agg(count, sum, avg)` on `total_amount_eur`
-- **Output mode:** `complete`
-- **Business value:** Real-time revenue dashboard per delivery zone; identifies Z1_Center as the highest-value zone (40% demand weight) and enables dynamic pricing decisions
+6. Spark writes the streaming results to Azure Blob Storage in Parquet format.
 
-### Use Case 4 — Courier availability by zone
-- **Feed:** Couriers
-- **Operation:** `groupBy("zone_id", "status").count()`
-- **Output mode:** `complete`
-- **Business value:** Live heatmap of courier supply per zone; surfaces imbalances between zones with high order demand (Z1_Center) and available couriers (IDLE status); inputs to dispatch optimisation
+7. The dashboard reads those Parquet files and refreshes to show live metrics.
 
-### Use Case 5 — Couriers going offline mid-delivery (anomaly detection)
-- **Feed:** Couriers
-- **Operation:** `filter(event_type == "OFFLINE" AND current_order_id IS NOT NULL)`
-- **Output mode:** `update`
-- **Business value:** Detects couriers that drop off while carrying an active order — a critical operational alert requiring immediate manual order reassignment; battery_pct is surfaced as the primary driver (67% of anomalies below 20%)
+## Implemented use cases
 
----
+### 1. Raw order event monitor
 
-## Real-Time Dashboard
+This use case shows all incoming order events in real time. It is useful for checking that the producer is running correctly and that events are arriving with the expected schema.
 
-The Streamlit dashboard reads Parquet files directly from Azure Blob Storage and refreshes every 15 seconds.
+### 2. Cancellation monitor
 
-**Live URL:** [https://streamanalyticsgroup5.streamlit.app](https://streamanalyticsgroup5.streamlit.app)
+This use case filters cancelled orders so the team can see cancellation activity as it happens. It helps identify possible operational issues such as courier shortage, restaurant delays, or customer side cancellations.
 
-**Local URL:** `http://localhost:8501`
+### 3. Revenue by zone
 
-### Dashboard sections
+This use case focuses on delivered orders and calculates metrics such as total revenue, average order value, and order count by zone. It helps show which delivery zones are performing best.
 
-| Section | Use case | Charts |
-|---|---|---|
-| KPI row | All | Total events, delivered orders, total revenue, avg order value, cancellation rate |
-| UC1 & UC2 | Orders | Event type bar chart + cancellation reasons pie + cancellations by zone table |
-| UC3 | Orders | Total revenue by zone + avg order value by zone + summary table |
-| UC4 | Couriers | Stacked status bar by zone + status distribution pie + live courier map (Madrid) |
-| UC5 | Couriers | Anomaly count + anomalies by zone + courier table + battery % histogram |
-| Volume | Both | Order events per hour + courier events per hour (lunch/dinner peaks visible) |
+### 4. Courier availability by zone
 
-### Running the dashboard locally
+This use case counts couriers by `zone_id` and `status`. It gives a live view of supply across zones and helps detect areas where there may not be enough available couriers.
 
-```bash
-cd laptop/
-pip install -r requirements.txt
-streamlit run dashboard.py
-```
+### 5. Couriers going offline during delivery
 
----
+This is the anomaly detection use case. It filters courier events where the courier becomes `OFFLINE` while still having an active `current_order_id`. This matters because those orders may need to be reassigned manually.
 
-## Azure Configuration
+## Important note about how to run the project
 
-| Resource | Value |
-|---|---|
-| Event Hub namespace | `iesstsabbadbaa-grp-01-05` |
-| Orders topic | `group_5_orders` |
-| Couriers topic | `group_5_couriers` |
-| Partitions per topic | 4 (aligned with `spark.sql.shuffle.partitions = 4`) |
-| Storage account | `iesstsabbadbaa` |
-| Blob container | `group5` |
-| Orders output path | `wasbs://group5@iesstsabbadbaa.blob.core.windows.net/orders/output/` |
-| Couriers output path | `wasbs://group5@iesstsabbadbaa.blob.core.windows.net/couriers/output/` |
+This project should be run from one computer.
 
-**Partition count rationale:** 4 partitions were chosen to align with Spark's `shuffle.partitions = 4` setting, maximising parallelism within the constraints of Colab's CPU allocation. Zone-based partitioning was considered but rejected — Event Hub partitions data by message key, not by field value, so zone-based partitioning requires application-level routing rather than broker-level configuration.
+The safest and clearest setup is the following.
 
----
+1. Open the notebook on Google Colab from your computer.
 
-## Repository Structure
+2. Run the full streaming pipeline there.
 
----
+3. From that same computer, open the Streamlit dashboard if you want to test it locally.
 
-## How to Run
+Running everything from one computer avoids confusion with paths, credentials, browser sessions, and active streaming processes. Even though the data is stored in Azure, the practical workflow for this milestone is based on one person running the notebook session and the dashboard from the same machine.
 
-### Prerequisites
-- Google Colab account
-- Python 3.x on your laptop
-- Azure credentials (already embedded in the notebook)
+In other words, one computer should act as the main control point for the whole demo.
 
-### Step 1 — Run the Spark notebook on Google Colab
+## How to run the notebook
 
-1. Open `Milestone2_Group5.ipynb` in Google Colab
-2. Run all cells **top to bottom** in order:
+Open `Milestone2_Group5.ipynb` in Google Colab and run the sections in order.
 
-| Section | What it does | Keep running? |
-|---|---|---|
-| Section 1 | Load credentials and config | Run once |
-| Section 2 | Define AVRO schemas | Run once |
-| Section 3 | Write producer scripts + launch via `nohup` | **Yes — producers must stay active** |
-| Section 4 | Install Java 21 + Spark 4.1.x | Run once (~5 min) |
-| Section 5 | Create Spark session + `readStream` for both feeds | Run once |
-| Section 6 | Five analytical use cases → in-memory tables | Run once |
-| **Section 7** | **`writeStream` → Parquet to Azure Blob** | **Yes — must stay active** |
-| Section 8 | Read Parquet back from Blob (verification) | Run once |
-| Section 9 | DuckDB batch queries on Parquet | Run once |
-| Section 10 | Stop all queries (run only when finished) | — |
+### Section 1
 
-> Sections 3 and 7 must remain active throughout the session.
+Loads the configuration and credentials.
 
-### Step 2 — View the live dashboard
+Run this once at the beginning.
 
-Open [https://streamanalyticsgroup5.streamlit.app](https://streamanalyticsgroup5.streamlit.app) in any browser. No setup required.
+### Section 2
 
-### Step 3 — Run the dashboard locally (optional)
+Defines the AVRO schemas for orders and couriers.
 
-```bash
-pip install -r requirements.txt
-streamlit run dashboard.py
-```
+Run this once.
 
-### Step 4 — Verify data is flowing
+### Section 3
+
+Creates the two producer scripts and launches them in the background using `nohup`.
+
+This section must remain effectively active because it starts the live event generation.
+
+### Section 4
+
+Installs Java and Spark.
+
+Run this once.
+
+### Section 5
+
+Creates the Spark session and reads both event streams from Azure Event Hubs.
+
+Run this once.
+
+### Section 6
+
+Builds the five analytical streaming queries.
+
+Run this once so the real time logic is available.
+
+### Section 7
+
+Writes both streams to Azure Blob Storage in Parquet format.
+
+This is one of the most important sections. It must stay running during the demo because this is what continuously saves the streaming output.
+
+### Section 8
+
+Reads the Parquet files back from Blob Storage to verify that the storage output is working correctly.
+
+Run this after Section 7 is active.
+
+### Section 9
+
+Uses DuckDB to run simple checks and analytical queries on the stored Parquet files.
+
+This is useful for validation and for showing that the output can also be queried in a batch style.
+
+### Section 10
+
+This section is only for stopping the pipeline when you are completely done.
+
+This part is very important.
+
+The notebook is written with:
 
 ```python
-from azure.storage.blob import BlobServiceClient
-svc = BlobServiceClient(
-    account_url="https://iesstsabbadbaa.blob.core.windows.net",
-    credential="<account_key>"
-)
-blobs = list(svc.get_container_client("group5").list_blobs())
-print(f"Files in Blob: {len(blobs)}")
-for b in blobs[:10]:
-    print(" ", b.name)
+if False:
 ```
 
-New Parquet files appear every 20 seconds once Section 7 is running.
+That means nothing inside Section 10 will run by default. This is intentional and it is the safe option.
+
+If you leave it as `False`, the queries and producers keep running.
+
+If you change it to `True`, the section will stop the active Spark streaming queries, kill both producers, and stop Spark.
+
+So the correct interpretation is:
+
+1. `False` means do not stop anything yet.
+
+2. `True` means stop everything now.
+
+Use `True` only at the very end of the demo or when you are sure you want to shut the whole pipeline down.
+
+## Dashboard
+
+The dashboard reads the Parquet files from Azure Blob Storage and displays the live results.
+
+It includes:
+
+1. KPI metrics
+
+2. Order event summaries
+
+3. Cancellation analysis
+
+4. Revenue by zone
+
+5. Courier availability by zone
+
+6. Courier anomaly detection
+
+7. Event volume monitoring
+
+If you are using the hosted dashboard, you can open the deployed Streamlit app in the browser.
+
+If you want to run it locally, use the same computer that is running the notebook workflow.
+
+Run:
+
+```bash
+pip install -r requirements.txt
+streamlit run dashboard.py
+```
+
+## Why Section 3 and Section 7 matter most
+
+If someone wants the shortest explanation of the notebook, this is the key idea.
+
+Section 3 starts the live data producers.
+
+Section 7 writes the streaming results to Blob Storage.
+
+If those two sections are not active, the pipeline is not really working as a live end to end system.
+
+That is why they should be treated as the core running parts of the project.
+
+## Azure setup used in the project
+
+The notebook uses:
+
+1. Event Hub namespace: `iesstsabbadbaa-grp-01-05`
+
+2. Orders topic: `group_5_orders`
+
+3. Couriers topic: `group_5_couriers`
+
+4. Storage account: `iesstsabbadbaa`
+
+5. Blob container: `group5`
+
+6. Orders output path: `wasbs://group5@iesstsabbadbaa.blob.core.windows.net/orders/output/`
+
+7. Couriers output path: `wasbs://group5@iesstsabbadbaa.blob.core.windows.net/couriers/output/`
+
+## Simple repository guide
+
+The most important file is:
+
+1. `Milestone2_Group5.ipynb`
+
+This notebook contains the full pipeline from setup to shutdown.
+
+Depending on your project folder, you may also have local dashboard files such as:
+
+1. `dashboard.py`
+
+2. `requirements.txt`
+
+These are used only for the dashboard side.
+
+## Final practical advice
+
+Run the notebook from top to bottom in order.
+
+Do not jump directly to later sections.
+
+Keep Section 3 and Section 7 active while demonstrating the project.
+
+Use one computer for the full workflow so everything stays clear and consistent.
+
+Leave Section 10 as `False` while the system is running.
+
+Change Section 10 to `True` only when you want to stop everything.
+
+This project is easiest to explain as one complete live pipeline, not as separate disconnected parts.
+
 
