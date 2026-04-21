@@ -10,7 +10,7 @@ This project implements a real time analytics pipeline for a food delivery platf
 
 The goal of Milestone 2 is to show the full pipeline working end to end, from event generation to live analytics and storage.
 
-**Live app:** [https://streamanalyticsgroup5.streamlit.app/)
+**Live app:** [https://streamanalyticsgroup5.streamlit.app/]
 
 ## What the project does
 
